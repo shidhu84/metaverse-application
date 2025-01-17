@@ -1,5 +1,39 @@
-const axios = require("axios");
+const axios2 = require("axios");
 
+const axios = {
+  post: async (...args) => {
+    try {
+      const res = await axios2.post(...args);
+      return res;
+    } catch (e) {
+      return e.response;
+    }
+  },
+  get: async (...args) => {
+    try {
+      const res = await axios2.get(...args);
+      return res;
+    } catch (e) {
+      return e.response;
+    }
+  },
+  put: async (...args) => {
+    try {
+      const res = await axios2.put(...args);
+      return res;
+    } catch (e) {
+      return e.response;
+    }
+  },
+  delete: async (...args) => {
+    try {
+      const res = await axios2.delete(...args);
+      return res;
+    } catch (e) {
+      return e.response;
+    }
+  },
+};
 const BACKEND_URL = "http://localhost:3000";
 const WS_URL = "ws://localhost:3001";
 
@@ -13,13 +47,13 @@ describe("Authentication", () => {
       password,
       type,
     });
-    expect(response.statusCode).toBe(200);
+    expect(response.status).toBe(200);
     const updatedResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
       username,
       password,
       type,
     });
-    expect(updatedResponse.statusCode).toBe(400);
+    expect(updatedResponse.status).toBe(400);
   });
 
   test("Username should not be empty", async () => {
@@ -29,7 +63,7 @@ describe("Authentication", () => {
       password,
       type,
     });
-    expect(response.statusCode).toBe(400);
+    expect(response.status).toBe(400);
   });
 
   test("Signin succeeds if username and password are correct", async () => {
@@ -45,8 +79,8 @@ describe("Authentication", () => {
       username,
       password,
     });
-    expect(response.statusCode).toBe(200);
-    expect(response.body.token).toBeDefined();
+    expect(response.status).toBe(200);
+    expect(response.data.token).toBeDefined();
   });
 
   test("Signin fails if username or password is incorrect", async () => {
@@ -62,7 +96,7 @@ describe("Authentication", () => {
       username: "wornguser",
       password,
     });
-    expect(response.statusCode).toBe(403);
+    expect(response.status).toBe(403);
   });
 });
 
