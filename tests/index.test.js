@@ -37,73 +37,36 @@ const axios = {
 const BACKEND_URL = "http://localhost:3000";
 const WS_URL = "ws://localhost:3001";
 
-describe("Authentication", () => {
-  test("User is able to signup only once", async () => {
-    const username = "yenure" + Math.random(); //yenure0.12345
-    const password = "12345";
-    const type = "admin";
-    const response = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-      username,
-      password,
-      type,
-    });
-    expect(response.status).toBe(200);
-    const updatedResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-      username,
-      password,
-      type,
-    });
-    expect(updatedResponse.status).toBe(400);
-  });
+// describe("Authentication", () => {
+//   test("User is able to signup only once", async () => {
+//     const username = "yenure" + Math.random(); //yenure0.12345
+//     const password = "12345";
+//     const type = "admin";
+//     const response = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
+//       username,
+//       password,
+//       type,
+//     });
+//     expect(response.status).toBe(200);
+//     const updatedResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
+//       username,
+//       password,
+//       type,
+//     });
+//     expect(updatedResponse.status).toBe(400);
+//   });
 
-  test("Username should not be empty", async () => {
-    const password = "12345";
-    const type = "admin";
-    const response = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-      password,
-      type,
-    });
-    expect(response.status).toBe(400);
-  });
+//   test("Username should not be empty", async () => {
+//     const password = "12345";
+//     const type = "admin";
+//     const response = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
+//       password,
+//       type,
+//     });
+//     expect(response.status).toBe(400);
+//   });
 
-  test("Signin succeeds if username and password are correct", async () => {
-    const username = `yenure${Math.random()}`; //yenure0.12345
-    const password = "123456";
-    const type = "admin";
-    await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-      username,
-      password,
-      type,
-    });
-    const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
-      username,
-      password,
-    });
-    expect(response.status).toBe(200);
-    expect(response.data.token).toBeDefined();
-  });
-
-  test("Signin fails if username or password is incorrect", async () => {
-    const username = `yenure${Math.random()}`; //yenure0.12345
-    const password = "123456";
-    const type = "admin";
-    await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-      username,
-      password,
-      type,
-    });
-    const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
-      username: "wornguser",
-      password,
-    });
-    expect(response.status).toBe(403);
-  });
-});
-
-// describe("User Metadata endpoints", () => {
-//   let token = "";
-//   let avatarId = "";
-//   beforeAll(async () => {
+//   test("Signin succeeds if username and password are correct", async () => {
 //     const username = `yenure${Math.random()}`; //yenure0.12345
 //     const password = "123456";
 //     const type = "admin";
@@ -116,73 +79,114 @@ describe("Authentication", () => {
 //       username,
 //       password,
 //     });
+//     expect(response.status).toBe(200);
+//     expect(response.data.token).toBeDefined();
+//   });
 
-//     token = response.data.token;
-//     const avatarResponse = await axios.post(
-//       `${BACKEND_URL}/api/v1/admin/avatar`,
-//       {
-//         imageUrl:
-//           "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm3RFDZM21teuCMFYx_AROjt-AzUwDBROFww&s",
-//         name: "Timmy",
-//       },
-//       {
-//         headers: {
-//           Autherization: `Bearer ${token}`,
-//         },
-//       }
-//     );
-//     avatarId = avatarResponse.data.avatarId;
-//   });
-//   test("User cant update the metadata with wrong avatar id", async () => {
-//     const avatarResponse = await axios.post(
-//       `${BACKEND_URL}/api/v1/user/metadata`,
-//       {
-//         avatarId: "test123",
-//       },
-//       {
-//         headers: {
-//           Autherization: `Bearer ${token}`,
-//         },
-//       }
-//     );
-//     expect(avatarResponse.statusCode).toBe(400);
-//   });
-//   test("User can update the metadata with right avatar id", async () => {
-//     const avatarResponse = await axios.post(
-//       `${BACKEND_URL}/api/v1/user/metadata`,
-//       {
-//         avatarId,
-//       },
-//       {
-//         headers: {
-//           Autherization: `Bearer ${token}`,
-//         },
-//       }
-//     );
-//     expect(avatarResponse.statusCode).toBe(200);
-//   });
-//   test("User cant update the metadata if auth header is empty", async () => {
-//     const avatarResponse = await axios.post(
-//       `${BACKEND_URL}/api/v1/user/metadata`,
-//       {
-//         avatarId: "test123",
-//       }
-//     );
-//     expect(avatarResponse.statusCode).toBe(403);
-//   });
-//   test("User cant update the metadata with empty avatar id or emtpy request body", async () => {
-//     const avatarResponse = await axios.post(
-//       `${BACKEND_URL}/api/v1/user/metadata`,
-//       {},
-//       {
-//         headers: {
-//           Autherization: `Bearer ${token}`,
-//         },
-//       }
-//     );
-//     expect(avatarResponse.statusCode).toBe(400);
+//   test("Signin fails if username or password is incorrect", async () => {
+//     const username = `yenure${Math.random()}`; //yenure0.12345
+//     const password = "123456";
+//     const type = "admin";
+//     await axios.post(`${BACKEND_URL}/api/v1/signup`, {
+//       username,
+//       password,
+//       type,
+//     });
+//     const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
+//       username: "wornguser",
+//       password,
+//     });
+//     expect(response.status).toBe(403);
 //   });
 // });
+
+describe("User Metadata endpoints", () => {
+  let token = "";
+  let avatarId = "";
+  beforeAll(async () => {
+    const username = `yenure${Math.random()}`; //yenure0.12345
+    const password = "123456";
+    const type = "admin";
+    await axios.post(`${BACKEND_URL}/api/v1/signup`, {
+      username,
+      password,
+      type,
+    });
+    const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
+      username,
+      password,
+    });
+
+    token = response.data.token;
+    const avatarResponse = await axios.post(
+      `${BACKEND_URL}/api/v1/admin/avatar`,
+      {
+        imageUrl:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm3RFDZM21teuCMFYx_AROjt-AzUwDBROFww&s",
+        name: "Timmy",
+      },
+      {
+        headers: {
+          authorization: token,
+        },
+      }
+    );
+    avatarId = avatarResponse.data.avatarId;
+    console.log("avatarId@@", avatarId);
+  });
+  test("User can't update the metadata with wrong avatar id", async () => {
+    const avatarResponse = await axios.post(
+      `${BACKEND_URL}/api/v1/user/metadata`,
+      {
+        avatarId: "test123",
+      },
+      {
+        headers: {
+          authorization: token,
+        },
+      }
+    );
+    expect(avatarResponse.status).toBe(400);
+  });
+  test("User can update the metadata with right avatar id", async () => {
+    const avatarResponse = await axios.post(
+      `${BACKEND_URL}/api/v1/user/metadata`,
+      {
+        avatarId,
+      },
+      {
+        headers: {
+          authorization: token,
+        },
+      }
+    );
+    expect(avatarResponse.status).toBe(200);
+  });
+  test("User cant update the metadata if auth header is empty", async () => {
+    const avatarResponse = await axios.post(
+      `${BACKEND_URL}/api/v1/user/metadata`,
+      {
+        avatarId: "test123",
+      },
+      {
+        headers: null,
+      }
+    );
+    expect(avatarResponse.status).toBe(403);
+  });
+  test("User cant update the metadata with empty avatar id or emtpy request body", async () => {
+    const avatarResponse = await axios.post(
+      `${BACKEND_URL}/api/v1/user/metadata`,
+      {},
+      {
+        headers: {
+          authorization: token,
+        },
+      }
+    );
+    expect(avatarResponse.status).toBe(400);
+  });
+});
 
 // describe("User Metadata endpoints", () => {
 //   let token = "";

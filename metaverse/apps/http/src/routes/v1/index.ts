@@ -30,7 +30,6 @@ router.post("/signup", async (req, res) => {
       userId: user.id,
     });
   } catch (error) {
-    console.log("error@@", error);
     res.status(400).json({ message: "User already exists" });
   }
 });
@@ -38,7 +37,6 @@ router.post("/signup", async (req, res) => {
 router.post("/signin", async (req, res) => {
   const parseData = SignInSchema.safeParse(req.body);
   if (!parseData.success) {
-    console.log("error@@");
     res.status(400).json({ message: "Validation Failed" });
   }
   try {
@@ -47,19 +45,16 @@ router.post("/signin", async (req, res) => {
         username: req.body.username,
       },
     });
-    console.log("user@@", user);
     if (!user) {
-      console.log("error user@@");
       res.status(403).json({ message: "User not found" });
     }
     const isPasswordValid = compare(parseData.data?.password!, user?.password!);
     if (!isPasswordValid) {
-      console.log("error password@@");
       res.status(400).json({ message: "User name or password does not match" });
     }
     const token = jwt.sign(
       {
-        id: user?.id,
+        userId: user?.id,
         role: user?.role,
       },
       JWT_PASSWORD
