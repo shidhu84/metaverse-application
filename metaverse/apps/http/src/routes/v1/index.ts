@@ -67,7 +67,20 @@ router.post("/signin", async (req, res) => {
 
 router.get("/elements", async (req, res) => {});
 
-router.get("/avatars", async (req, res) => {});
+router.get("/avatars", async (req, res) => {
+  try {
+    const avatars = await client.avatar.findMany();
+    res.json({
+      avatars: avatars.map((x) => ({
+        id: x.id,
+        imageUrl: x.imageUrl,
+        name: x.name,
+      })),
+    });
+  } catch (error) {
+    res.status(400).json({ message: "Internal Server Error" });
+  }
+});
 
 router.use("/user", userRouter);
 router.use("/space", spaceRouter);
