@@ -11,7 +11,6 @@ import { JWT_PASSWORD } from "../../config";
 export const router = Router();
 
 router.post("/signup", async (req, res) => {
-  debugger;
   const parseData = SignUpSchema.safeParse(req.body);
   if (!parseData.success) {
     res.status(400).json({ message: "Validation Failed" });
@@ -38,6 +37,7 @@ router.post("/signin", async (req, res) => {
   const parseData = SignInSchema.safeParse(req.body);
   if (!parseData.success) {
     res.status(400).json({ message: "Validation Failed" });
+    return;
   }
   try {
     const user = await client.user.findUnique({
@@ -47,6 +47,7 @@ router.post("/signin", async (req, res) => {
     });
     if (!user) {
       res.status(403).json({ message: "User not found" });
+      return;
     }
     const isPasswordValid = compare(parseData.data?.password!, user?.password!);
     if (!isPasswordValid) {
@@ -59,7 +60,7 @@ router.post("/signin", async (req, res) => {
       },
       JWT_PASSWORD
     );
-    res.json({ token: `Bearer ${token}` });
+    res.json({ token });
   } catch (error) {
     res.status(400).json({ message: "Somthing went  wrong" });
   }
