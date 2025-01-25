@@ -20,5 +20,7 @@ export const validateUserToken = (
     };
     req.userId = decoded.userId;
     next();
-  } catch (error) {}
+  } catch (error) {
+    console.log("failed to decoe user role");
+  }
 };
