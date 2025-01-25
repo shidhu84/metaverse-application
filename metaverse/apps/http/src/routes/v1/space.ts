@@ -1,6 +1,10 @@
 import { Router } from "express";
 import client from "@repo/db/client";
-import { CreateSpaceSchema, DeleteElementSchema } from "../../types";
+import {
+  AddElementSchema,
+  CreateSpaceSchema,
+  DeleteElementSchema,
+} from "../../types";
 import { validateUserToken } from "../../middleware/user";
 export const spaceRouter = Router();
 
@@ -154,7 +158,49 @@ spaceRouter.get("/all", validateUserToken, async (req, res) => {
   }
 });
 
-spaceRouter.post("/element", async (req, res) => {});
+spaceRouter.post("/element", validateUserToken, async (req, res) => {
+  const parsedData = AddElementSchema.safeParse(req.body);
+  if (!parsedData.success) {
+    res.status(400).json({ message: "Validation failed" });
+    return;
+  }
+  try {
+    const space = await client.space.findUnique({
+      where: {
+        id: parsedData.data.spaceId,
+        creatorId: req.userId,
+      },
+      select: {
+        width: true,
+        height: true,
+      },
+    });
+    if (!space) {
+      res.status(403).json({ message: "Unauthorized" });
+      return;
+    }
+    if (
+      parsedData.data.x < 0 ||
+      parsedData.data.y < 0 ||
+      parsedData.data.x > space.width ||
+      parsedData.data.y > space.height
+    ) {
+      res.status(400).json({ message: "Point is outside of the boundary" });
+      return;
+    }
+    await client.spaceElements.create({
+      data: {
+        elementId: parsedData.data.elementId,
+        spaceId: parsedData.data.spaceId,
+        x: parsedData.data.x,
+        y: parsedData.data.y,
+      },
+    });
+    res.status(200).json({ message: "Space element added successfully!" });
+  } catch (error) {
+    res.status(400).json({ message: "Internal server Error" });
+  }
+});
 
 spaceRouter.get("/:spaceId", async (req, res) => {
   const spaceId = req.params.spaceId;
