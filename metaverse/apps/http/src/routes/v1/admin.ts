@@ -5,6 +5,7 @@ import {
   createAvatarSchema,
   CreateElementSchema,
   createMapSchema,
+  updateElementSchema,
 } from "../../types";
 import { adminMiddleware } from "../../middleware/admin";
 import { parse } from "node:path";
@@ -13,7 +14,7 @@ export const adminRouter = Router();
 adminRouter.post("/element", adminMiddleware, async (req, res) => {
   const parseData = CreateElementSchema.safeParse(req.body);
   if (!parseData?.success) {
-    res.status(400).json({ message: "Internal server error" });
+    res.status(400).json({ message: "Validation failed" });
     return;
   }
   try {
@@ -33,12 +34,36 @@ adminRouter.post("/element", adminMiddleware, async (req, res) => {
   }
 });
 
-adminRouter.put("/element/:elementId", (req, res) => {});
+adminRouter.put("/element/:elementId", adminMiddleware, async (req, res) => {
+  if (!req.params.elementId) {
+    res.status(400).json("Invalid input request!");
+    return;
+  }
+  const parsedData = updateElementSchema.safeParse(req.body);
+  if (!parsedData.success) {
+    res.status(400).json({ message: "Validation failed" });
+    return;
+  }
+  try {
+    await client.element.update({
+      where: {
+        id: req.params.elementId,
+      },
+      data: {
+        imageUrl: parsedData.data.imageUrl,
+      },
+    });
+    res.json({ message: "Element successfully updated!" });
+  } catch (error) {
+    res.status(400).json("Internal server error!");
+  }
+});
 
 adminRouter.post("/avatar", adminMiddleware, async (req, res) => {
   const parseData = createAvatarSchema.safeParse(req.body);
   if (!parseData?.success) {
-    res.status(403).json({ message: "Validation Error" });
+    res.status(400).json({ message: "Validation failed" });
+    return;
   }
   try {
     const result = await client.avatar.create({
@@ -55,10 +80,10 @@ adminRouter.post("/avatar", adminMiddleware, async (req, res) => {
   }
 });
 
-adminRouter.post("/map", async (req, res) => {
+adminRouter.post("/map", adminMiddleware, async (req, res) => {
   const parseData = createMapSchema.safeParse(req.body);
   if (!parseData?.success) {
-    res.status(400).json({ message: "Internal Server error" });
+    res.status(400).json({ message: "Validation failed" });
     return;
   }
   try {
